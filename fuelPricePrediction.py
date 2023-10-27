@@ -64,7 +64,18 @@ fig.add_trace(go.Scatter(x=list(range(len(accurate_predictions_with_next_day))),
 # Highlighting the next day's predicted price
 fig.add_trace(go.Scatter(x=[len(new_prices)-1], y=[next_day_price], mode='markers', marker=dict(color='red', size=10), name='Next Day Predicted Price'))
 
-fig.update_layout(title="Fuel Prices Prediction")
+fig.update_layout(
+    title="Fuel Prices Prediction",
+    template='plotly_dark',  # Dark theme
+    xaxis_title="Days",
+    yaxis_title="Price (Euro)",
+    legend_title="Legend",
+    font=dict(
+        family="Courier New, monospace",
+        size=18,
+        color="white"
+    )
+)
 fig.show()
 
 
