@@ -6,14 +6,14 @@ from tensorflow.keras.models import Sequential
 from tensorflow.keras.layers import LSTM, Dense
 
 # Load and preprocess the data
-data = pd.read_csv(r"C:\Users\liamh\OneDrive\Desktop\FuelPrices.csv")
+data = pd.read_csv(r"C:\Users\liamh\OneDrive\Desktop\fuelbuddy  (Responses) - Form Responses 1.csv")
 prices = data['Price'].values.reshape(-1, 1)
 
 scaler = MinMaxScaler(feature_range=(0, 1))
 normalized_data = scaler.fit_transform(prices)
 
 # Create sequences (e.g., use the last 28 days to predict the next 7 days)
-sequence_length = 28
+sequence_length = 31
 X, y = [], []
 for i in range(sequence_length, len(normalized_data) - 7):
     X.append(normalized_data[i-sequence_length:i])
@@ -28,7 +28,7 @@ model.add(LSTM(units=50))
 model.add(Dense(units=7))  # Predicting for 7 days
 
 model.compile(optimizer='adam', loss='mean_squared_error')
-model.fit(X, y, epochs=50, batch_size=32)
+model.fit(X, y, epochs=100, batch_size=32)
 
 # Predict the next week's prices
 last_sequence = normalized_data[-sequence_length:]
@@ -41,18 +41,10 @@ actual_prices = scaler.inverse_transform(last_sequence)
 hover_template = 'Day: %{x}<br>Price: %{y:$}'
 
 fig = go.Figure()
-fig.add_trace(go.Scatter(x=np.arange(28), y=actual_prices.flatten(),
-                    mode='lines',
-                    name='Actual Last 28 Days',
-                    hovertemplate=hover_template,
-                    line=dict(color='royalblue', width=2)))
+fig.add_trace(go.Bar(x=np.arange(31, 38), y=predicted_prices[0],
+                    name='Predicted Next 7 Days'))
 
-fig.add_trace(go.Scatter(x=np.arange(28, 35), y=predicted_prices[0],
-                    mode='lines+markers',
-                    name='Predicted Next 7 Days',
-                    hovertemplate=hover_template,
-                    line=dict(color='firebrick', width=2)))
-
+# The same layout as provided in the original code
 fig.update_layout(
     title='Fuel Price Prediction',
     xaxis_title='Days',
@@ -87,4 +79,6 @@ fig.update_layout(
         )
     ]
 )
+
+# Display the figure
 fig.show()
